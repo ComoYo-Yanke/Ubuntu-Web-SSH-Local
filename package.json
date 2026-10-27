@@ -1,0 +1,14 @@
+{
+  "name": "ubuntu-web-ssh",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Minimal web SSH client for Ubuntu Server",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "ssh2": "^1.16.0",
+    "ws": "^8.18.3"
+  }
+}
