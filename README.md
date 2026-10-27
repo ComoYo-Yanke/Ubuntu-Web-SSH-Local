@@ -1,6 +1,6 @@
 # Ubuntu Web SSH
 
-一个尽量小的 Web SSH 工具：在浏览器里连接 Ubuntu Server，使用真实 PTY 终端，支持 screen、SFTP 上传下载和 CPU/内存/磁盘监控。
+一个尽量小的 Web SSH 工具：在浏览器里连接 Ubuntu Server，使用真实 PTY 终端，支持 screen、SFTP 上传下载和 CPU/内存/磁盘监控（含最近 2 分钟折线图）。
 
 技术栈固定为 Node.js + Express + ssh2 + ws，前端是单个 `index.html`，终端使用 CDN 引入的 xterm.js。
 
@@ -46,7 +46,7 @@ http://<运行 server.js 的机器 IP>:3000
 PORT=8080 node server.js
 ```
 
-然后输入 Ubuntu 的 host/IP、SSH 端口、用户名和密码即可连接。服务端需要能访问目标机器的 SSH 端口。
+然后输入 Ubuntu 的 host/IP、SSH 端口、用户名和密码即可连接。服务端需要能访问目标机器的 SSH 端口。主机和端口会保存在当前浏览器的 `localStorage` 中，下次打开自动填好；密码不会保存。
 
 ## 使用说明
 
@@ -54,6 +54,7 @@ PORT=8080 node server.js
 
 - 使用真实的 SSH PTY（`term=xterm-256color`），浏览器尺寸变化会同步给远程终端。
 - 支持在终端里直接运行 `ls`、`top`、`vim` 等交互程序。
+- 终端滚动条使用 6px 半透明细条，并支持 `scrollbar-width: thin`，降低视觉存在感。
 - 运行 `screen -S demo` 后，可通过终端内快捷键或右侧「screen 窗口」按钮切换窗口。
 - 页面刷新后会尝试用当前标签页的 session 恢复终端；服务重启后需要重新输入密码。
 - 「重连终端」用于 WebSocket/网络断开后重连；「断开」会主动销毁服务端会话。
@@ -74,7 +75,7 @@ sudo apt install screen
 
 ### 文件传输
 
-- 上传：选择本地文件，填写远程目录（默认 `/tmp`），点「上传」。后端通过临时本地文件 + `sftp.fastPut` 写入远程。
+- 上传：选择本地文件后可编辑完整远程目标路径（默认 `/tmp/文件名`，也可以改成 `/home/ubuntu/name.zip` 等任意路径），点「上传」。后端通过临时本地文件 + `sftp.fastPut` 写入远程。
 - 下载：填写远程文件路径（默认 `/etc/hostname`），点「下载」。后端通过 `sftp.fastGet` 下载到临时文件，再作为附件返回浏览器。
 - 页面会显示上传进度、上传/下载成功或错误信息。
 - 远程目录需要有写权限；下载路径需要有读权限。
@@ -93,7 +94,7 @@ top -bn1 | grep "Cpu(s)" ; free -m ; df -h /
 - 内存已用 / 总量（`free -m`）
 - 根分区已用 / 总量 / 使用率（`df -h /`）
 
-手动对比时，请在服务器上执行同样的命令。`top` 第一次采样的 CPU 数值会受采样窗口影响，短时间内有少量偏差是正常的。
+右下角会保留最近 40 次采样（约 2 分钟）的 CPU、内存、磁盘使用率折线图；鼠标移入可查看对应时间点。手动对比时，请在服务器上执行同样的命令。`top` 第一次采样的 CPU 数值会受采样窗口影响，短时间内有少量偏差是正常的。
 
 ## 验收步骤
 
@@ -109,7 +110,7 @@ top -bn1 | grep "Cpu(s)" ; free -m ; df -h /
 - 没有业务层登录、权限、HTTPS 或多用户隔离。**不要直接暴露到公网**，建议只在本机/可信内网使用。
 - 没有 SSH host key 校验，ssh2 默认接受服务器主机密钥；不适合连接不受信任的网络目标。
 - 前端只管理一个当前连接。后端理论支持多个 sessionId，但没有会话 TTL，异常关闭页面后会话会留在内存，直到进程重启或主动断开。
-- 页面刷新会在当前标签页的 `sessionStorage` 中保留 `sessionId` 和用于显示的 `user@host:port`，但不保留密码。
+- 页面刷新会在当前标签页的 `sessionStorage` 中保留 `sessionId` 和用于显示的 `user@host:port`；主机和端口另外保存在当前浏览器的 `localStorage` 中用于下次预填，密码不会保存。
 - 上传文件会先进入 Node 进程内存，并写入系统临时目录，再由 `fastPut` 发送；默认请求体上限为 2 GB，超大文件不建议使用此工具。下载也会先落到临时文件。
 - 需要浏览器能加载 jsDelivr 上的 xterm.js；完全离线环境需要自行把 xterm.js 和 CSS 下载到本地并改引用。
 - 监控依赖 Ubuntu 常见的 `top`、`free`、`df` 输出格式；最小化系统或非 Ubuntu 系统可能需要调整解析。

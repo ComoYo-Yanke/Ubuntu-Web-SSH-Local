@@ -149,16 +149,16 @@ app.post('/upload', express.raw({ type: () => true, limit: '2gb' }), async (req,
   const session = sessionFor(req, res);
   if (!session) return;
   const name = path.posix.basename(String(req.query.name || ''));
-  const dir = String(req.query.dir || '/tmp');
-  if (!name || !Buffer.isBuffer(req.body) || !req.body.length) {
-    return res.status(400).json({ error: '请选择文件并填写远程目录' });
+  let remote = String(req.query.path || '').trim();
+  if (!remote || remote.endsWith('/')) remote = path.posix.join(remote || '/tmp', name);
+  if (!name || !remote || !Buffer.isBuffer(req.body) || !req.body.length) {
+    return res.status(400).json({ error: '请选择文件并填写远程目标路径' });
   }
   const local = path.join(os.tmpdir(), `webssh-${crypto.randomUUID()}`);
   try {
     await fs.promises.writeFile(local, req.body);
     const conn = await sshConnect(session);
     const sftp = await getSftp(conn);
-    const remote = path.posix.join(dir, name);
     await new Promise((resolve, reject) => {
       sftp.fastPut(local, remote, { mode: 0o644 }, (err) => (err ? reject(err) : resolve()));
     });

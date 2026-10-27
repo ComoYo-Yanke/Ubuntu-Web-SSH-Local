@@ -1,4 +1,4 @@
-<!doctype html> <html lang=zh-CN> <head> <meta charset=utf-8> <meta name=viewport content="width=device-width,initial-scale=1"> <title>Ubuntu Web SSH</title><link rel=icon href=data:,> <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.css> <style>*{box-sizing:border-box}:root{--bg:#0d1117;--panel:#161b22;--line:#30363d;--text:#e6edf3;--muted:#8b949e;--blue:#2f81f7;--green:#3fb950;--red:#f85149}body,html{height:100%;margin:0}body{display:flex;flex-direction:column;overflow:hidden;background:var(--bg);color:var(--text);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input{font:inherit}button{color:var(--text);background:#21262d;border:1px solid var(--line);border-radius:6px;padding:5px 12px;cursor:pointer}button:hover:not(:disabled){background:#30363d;border-color:#8b949e}button:disabled{opacity:.4;cursor:not-allowed}button.primary{background:var(--blue);border-color:var(--blue);color:#fff}button.danger{color:#ff7b72}header{height:52px;flex:0 0 52px;display:flex;align-items:center;gap:12px;padding:0 16px;background:#010409;border-bottom:1px solid var(--line)}header strong{font-size:16px;white-space:nowrap}header strong span{color:var(--muted);font-weight:500}.target{color:var(--muted);font-family:ui-monospace,Consolas,monospace;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:32vw}.status{display:flex;gap:6px;align-items:center;color:var(--muted);font-size:12px}.status i{width:8px;height:8px;border-radius:50%;background:#6e7681}.status.ok i{background:var(--green);box-shadow:0 0 6px var(--green)}.spacer{flex:1}main{flex:1;min-height:0;display:flex}.terminal-pane{flex:1;min-width:0;min-height:0;padding:10px;background:#0b0f14}#terminal{width:100%;height:100%}#terminal .xterm{height:100%}aside{width:326px;flex:0 0 326px;overflow:auto;padding:12px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:12px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}.panel h2{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.metric{margin:10px 0 12px}.metric:last-of-type{margin-bottom:2px}.metric-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px;font-size:12px}.metric-head span:first-child{color:var(--muted);white-space:nowrap}.metric-head b{font-family:ui-monospace,Consolas,monospace;font-weight:500;font-size:12px;text-align:right}canvas.bar{display:block;width:100%;height:12px}.field{display:flex;gap:8px;margin-top:8px}.field input{min-width:0;flex:1}input{background:#0d1117;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:7px 9px;outline:0}input:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(47,129,247,.2)}input[type=file]{font-size:12px;width:100%;padding:6px}.hint{color:var(--muted);font-size:11px;margin:8px 0 0;line-height:1.5}.hint.err,.status-line.err{color:var(--red)}.status-line{font-size:12px;color:var(--muted);margin-top:8px;min-height:18px;word-break:break-word}.status-line.ok{color:var(--green)}.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.keys button{padding:6px 0;font-family:ui-monospace,Consolas,monospace;font-size:12px}.overlay{position:fixed;inset:0;display:grid;place-items:center;background:rgba(1,4,9,.78);backdrop-filter:blur(5px);z-index:20;opacity:0;visibility:hidden;transition:.18s}.overlay.show{opacity:1;visibility:visible}.login-card{width:min(400px,calc(100vw - 32px));background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.5)}.login-card h1{font-size:20px;margin:0 0 4px}.login-card p{font-size:12px;color:var(--muted);margin:0 0 18px}.login-card label{display:block;margin-top:10px;font-size:12px;color:var(--muted)}.login-card input{width:100%;margin-top:4px;padding:9px 10px}.login-card .primary{width:100%;margin-top:18px;padding:9px}.form-error{color:var(--red);font-size:12px;min-height:18px;margin-top:10px}#toast{position:fixed;right:18px;bottom:18px;max-width:min(420px,calc(100vw - 36px));background:#21262d;border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:6px;padding:10px 14px;font-size:13px;box-shadow:0 8px 28px rgba(0,0,0,.4);opacity:0;transform:translateY(8px);pointer-events:none;transition:.2s;z-index:30}#toast.show{opacity:1;transform:none}#toast.err{border-left-color:var(--red)}#toast.ok{border-left-color:var(--green)}@media(max-width:860px){main{flex-direction:column}.terminal-pane{min-height:52vh}aside{width:auto;flex:1 1 auto;border-left:0;border-top:1px solid var(--line)}.target{max-width:20vw}}</style> </head> <body> <header><strong>Ubuntu <span>Web SSH</span></strong><span id=target class=target>未连接</span><span id=status class=status><i></i><span id=statusText>未连接</span></span><span class=spacer></span><button id=reconnectBtn disabled=disabled>重连终端</button><button id=disconnectBtn class=danger disabled=disabled>断开</button></header> <main> <section class=terminal-pane> <div id=terminal></div> </section> <aside> <section class=panel> <h2>资源监控 <span id=metricsStatus class=hint style=margin:0>等待连接</span></h2> <div class=metric> <div class=metric-head><span>CPU 使用率</span><b id=cpuText>--</b></div><canvas id=cpuBar class=bar></canvas> </div> <div class=metric> <div class=metric-head><span>内存</span><b id=memText>--</b></div><canvas id=memBar class=bar></canvas> </div> <div class=metric> <div class=metric-head><span>根分区 /</span><b id=diskText>--</b></div><canvas id=diskBar class=bar></canvas> </div> </section> <section class=panel> <h2>文件传输</h2> <input id=fileInput type=file> <div class=field><input id=uploadDir value=/tmp placeholder=远程目录><button id=uploadBtn>上传</button> </div> <div class=field><input id=downloadPath value=/etc/hostname placeholder=远程文件路径><button id=downloadBtn>下载</button></div> <div id=fileStatus class=status-line>选择文件上传，或填写远程路径下载。</div> </section> <section class=panel> <h2>screen 窗口</h2> <div class=hint style=margin:0>先启动 screen -S name，再点击按钮发送 Ctrl+A + 按键。</div> <div class=keys><button data-screen=n>N</button><button data-screen=p>P</button><button data-screen=0>0</button><button data-screen=1>1</button><button data-screen=2>2</button><button data-screen=3>3</button><button data-screen=4>4</button><button data-screen=5>5</button><button data-screen=6>6</button><button data-screen=7>7</button><button data-screen=8>8</button><button data-screen=9>9</button></div> </section> </aside> </main> <div id=login class="overlay show"> <form id=connectForm class=login-card> <h1>连接 Ubuntu Server</h1> <p>密码仅保存在本服务进程内存中，不写入磁盘。</p> <label for=host>主机 / IP<input id=host placeholder=192.168.1.10 required autocomplete=off></label> <label for=port>端口<input id=port type=number value=22 min=1 max=65535 required></label> <label for=username>用户名<input id=username placeholder=ubuntu required autocomplete=username></label> <label for=password>密码<input id=password type=password required autocomplete=current-password></label> <div id=formError class=form-error></div> <button id=connectBtn class=primary type=submit>连接</button> </form> </div> <div id=toast></div> <script src=https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.js></script> <script src=https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.js></script> <script> const $ = (id) => document.getElementById(id);
+<!doctype html> <html lang=zh-CN> <head> <meta charset=utf-8> <meta name=viewport content="width=device-width,initial-scale=1"> <title>Ubuntu Web SSH</title><link rel=icon href=data:,> <link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.css> <style>*{box-sizing:border-box}:root{--bg:#0d1117;--panel:#161b22;--line:#30363d;--text:#e6edf3;--muted:#8b949e;--blue:#2f81f7;--green:#3fb950;--red:#f85149}body,html{height:100%;margin:0}body{display:flex;flex-direction:column;overflow:hidden;background:var(--bg);color:var(--text);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input{font:inherit}button{color:var(--text);background:#21262d;border:1px solid var(--line);border-radius:6px;padding:5px 12px;cursor:pointer}button:hover:not(:disabled){background:#30363d;border-color:#8b949e}button:disabled{opacity:.4;cursor:not-allowed}button.primary{background:var(--blue);border-color:var(--blue);color:#fff}button.danger{color:#ff7b72}header{height:52px;flex:0 0 52px;display:flex;align-items:center;gap:12px;padding:0 16px;background:#010409;border-bottom:1px solid var(--line)}header strong{font-size:16px;white-space:nowrap}header strong span{color:var(--muted);font-weight:500}.target{color:var(--muted);font-family:ui-monospace,Consolas,monospace;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:32vw}.status{display:flex;gap:6px;align-items:center;color:var(--muted);font-size:12px}.status i{width:8px;height:8px;border-radius:50%;background:#6e7681}.status.ok i{background:var(--green);box-shadow:0 0 6px var(--green)}.spacer{flex:1}main{flex:1;min-height:0;display:flex}.terminal-pane{flex:1;min-width:0;min-height:0;padding:10px;background:#0b0f14}#terminal{width:100%;height:100%}#terminal .xterm{height:100%}#terminal .xterm-viewport{scrollbar-width:thin;scrollbar-color:rgba(139,148,158,.28) transparent}#terminal .xterm-viewport::-webkit-scrollbar{width:6px;height:6px}#terminal .xterm-viewport::-webkit-scrollbar-track{background:transparent}#terminal .xterm-viewport::-webkit-scrollbar-thumb{background:rgba(139,148,158,.25);border-radius:3px}#terminal .xterm-viewport::-webkit-scrollbar-thumb:hover{background:rgba(139,148,158,.5)}aside{width:326px;flex:0 0 326px;overflow:auto;padding:12px;border-left:1px solid var(--line);display:flex;flex-direction:column;gap:12px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}.panel h2{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}.metric{margin:10px 0 12px}.metric:last-of-type{margin-bottom:2px}.metric-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px;font-size:12px}.metric-head span:first-child{color:var(--muted);white-space:nowrap}.metric-head b{font-family:ui-monospace,Consolas,monospace;font-weight:500;font-size:12px;text-align:right}canvas.bar{display:block;width:100%;height:12px}.field{display:flex;gap:8px;margin-top:8px}.field input{min-width:0;flex:1}input{background:#0d1117;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:7px 9px;outline:0}input:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(47,129,247,.2)}input[type=file]{font-size:12px;width:100%;padding:6px}.hint{color:var(--muted);font-size:11px;margin:8px 0 0;line-height:1.5}.hint.err,.status-line.err{color:var(--red)}.status-line{font-size:12px;color:var(--muted);margin-top:8px;min-height:18px;word-break:break-word}.status-line.ok{color:var(--green)}.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.keys button{padding:6px 0;font-family:ui-monospace,Consolas,monospace;font-size:12px}.overlay{position:fixed;inset:0;display:grid;place-items:center;background:rgba(1,4,9,.78);backdrop-filter:blur(5px);z-index:20;opacity:0;visibility:hidden;transition:.18s}.overlay.show{opacity:1;visibility:visible}.login-card{width:min(400px,calc(100vw - 32px));background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.5)}.login-card h1{font-size:20px;margin:0 0 4px}.login-card p{font-size:12px;color:var(--muted);margin:0 0 18px}.login-card label{display:block;margin-top:10px;font-size:12px;color:var(--muted)}.login-card input{width:100%;margin-top:4px;padding:9px 10px}.login-card .primary{width:100%;margin-top:18px;padding:9px}.form-error{color:var(--red);font-size:12px;min-height:18px;margin-top:10px}#toast{position:fixed;right:18px;bottom:18px;max-width:min(420px,calc(100vw - 36px));background:#21262d;border:1px solid var(--line);border-left:3px solid var(--blue);border-radius:6px;padding:10px 14px;font-size:13px;box-shadow:0 8px 28px rgba(0,0,0,.4);opacity:0;transform:translateY(8px);pointer-events:none;transition:.2s;z-index:30}#toast.show{opacity:1;transform:none}#toast.err{border-left-color:var(--red)}#toast.ok{border-left-color:var(--green)}.history{position:relative;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}.history-head{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:10px;color:var(--muted);white-space:nowrap}.legend{display:flex;gap:7px}.legend i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:3px}#historyChart{display:block;width:100%;height:90px;margin-top:2px}.chart-tip{position:absolute;top:18px;z-index:2;display:none;flex-direction:column;gap:2px;padding:5px 7px;background:rgba(13,17,23,.94);border:1px solid var(--line);border-radius:5px;font:10px/1.35 ui-monospace,Consolas,monospace;color:var(--text);pointer-events:none;white-space:nowrap}.chart-tip.show{display:flex}.chart-tip i{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px}@media(max-width:860px){main{flex-direction:column}.terminal-pane{min-height:52vh}aside{width:auto;flex:1 1 auto;border-left:0;border-top:1px solid var(--line)}.target{max-width:20vw}}</style> </head> <body> <header><strong>Ubuntu <span>Web SSH</span></strong><span id=target class=target>未连接</span><span id=status class=status><i></i><span id=statusText>未连接</span></span><span class=spacer></span><button id=reconnectBtn disabled=disabled>重连终端</button><button id=disconnectBtn class=danger disabled=disabled>断开</button></header> <main> <section class=terminal-pane> <div id=terminal></div> </section> <aside> <section class=panel> <h2>资源监控 <span id=metricsStatus class=hint style=margin:0>等待连接</span></h2> <div class=metric> <div class=metric-head><span>CPU 使用率</span><b id=cpuText>--</b></div><canvas id=cpuBar class=bar></canvas> </div> <div class=metric> <div class=metric-head><span>内存</span><b id=memText>--</b></div><canvas id=memBar class=bar></canvas> </div> <div class=metric> <div class=metric-head><span>根分区 /</span><b id=diskText>--</b></div><canvas id=diskBar class=bar></canvas> </div> <div class=history> <div class=history-head><span>最近 2 分钟</span><span class=legend><span><i style=background:#3987e5></i>CPU</span><span><i style=background:#d95926></i>内存</span><span><i style=background:#199e70></i>磁盘</span></span></div> <canvas id=historyChart role=img aria-label="CPU、内存和磁盘使用率最近两分钟折线图"></canvas> <div id=chartTip class=chart-tip></div> </div> </section> <section class=panel> <h2>文件传输</h2> <input id=fileInput type=file> <div class=field><input id=uploadPath value=/tmp/ placeholder="远程目标路径，如 /tmp/file.zip"><button id=uploadBtn>上传</button> </div> <div class=field><input id=downloadPath value=/etc/hostname placeholder=远程文件路径><button id=downloadBtn>下载</button></div> <div id=fileStatus class=status-line>选择文件后可修改完整目标路径；下载支持任意远程路径。</div> </section> <section class=panel> <h2>screen 窗口</h2> <div class=hint style=margin:0>先启动 screen -S name，再点击按钮发送 Ctrl+A + 按键。</div> <div class=keys><button data-screen=n>N</button><button data-screen=p>P</button><button data-screen=0>0</button><button data-screen=1>1</button><button data-screen=2>2</button><button data-screen=3>3</button><button data-screen=4>4</button><button data-screen=5>5</button><button data-screen=6>6</button><button data-screen=7>7</button><button data-screen=8>8</button><button data-screen=9>9</button></div> </section> </aside> </main> <div id=login class="overlay show"> <form id=connectForm class=login-card> <h1>连接 Ubuntu Server</h1> <p>主机和端口会记住；密码仅保存在本服务进程内存中，不写入磁盘。</p> <label for=host>主机 / IP<input id=host placeholder=192.168.1.10 required autocomplete=off></label> <label for=port>端口<input id=port type=number value=22 min=1 max=65535 required></label> <label for=username>用户名<input id=username placeholder=ubuntu required autocomplete=username></label> <label for=password>密码<input id=password type=password required autocomplete=current-password></label> <div id=formError class=form-error></div> <button id=connectBtn class=primary type=submit>连接</button> </form> </div> <div id=toast></div> <script src=https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.js></script> <script src=https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.js></script> <script> const $ = (id) => document.getElementById(id);
     const term = new Terminal({
       cursorBlink: true, fontFamily: '"Cascadia Mono","JetBrains Mono",Consolas,monospace', fontSize: 14, lineHeight: 1.15, scrollback: 5000,
       theme: { background: '#0b0f14', foreground: '#d7e1ea', cursor: '#7ee787', selectionBackground: '#264f78' }
@@ -13,6 +13,11 @@
     let metricsTimer = null;
     let metricsBusy = false;
     let lastMetrics = { cpu: 0, mem: 0, disk: 0 };
+    const HISTORY_SIZE = 40;
+    const CHART_KEYS = ['cpu', 'mem', 'disk'];
+    const CHART_COLORS = ['#3987e5', '#d95926', '#199e70'];
+    let chartHistory = [];
+    let hoverIndex = -1;
     let toastTimer = null;
     function showToast(text, type = '') {
       const el = $('toast');
@@ -159,6 +164,48 @@
       drawBar('memBar', lastMetrics.mem);
       drawBar('diskBar', lastMetrics.disk);
     }
+    function drawChart() {
+      const canvas = $('historyChart'), width = canvas.clientWidth, height = canvas.clientHeight, dpr = window.devicePixelRatio || 1;
+      if (!width) return;
+      if (canvas.width !== Math.round(width * dpr) || canvas.height !== Math.round(height * dpr)) { canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr); }
+      const left = 27, right = 9, top = 8, bottom = 14, plotW = width - left - right, plotH = height - top - bottom;
+      const ctx = canvas.getContext('2d'), y = (v) => top + plotH * (1 - Math.max(0, Math.min(100, Number(v) || 0)) / 100);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, width, height);
+      ctx.font = '9px ui-monospace,Consolas,monospace'; ctx.textBaseline = 'middle'; ctx.lineWidth = 1; ctx.strokeStyle = '#2c2c2a'; ctx.fillStyle = '#898781';
+      [0, 50, 100].forEach((v) => { const gy = Math.round(y(v)) + 0.5; ctx.beginPath(); ctx.moveTo(left, gy); ctx.lineTo(width - right, gy); ctx.stroke(); ctx.fillText(String(v), 2, gy); });
+      if (!chartHistory.length) { ctx.fillStyle = '#484f58'; ctx.fillText('等待采样…', left + 6, top + plotH / 2); return; }
+      const x = (i) => left + plotW - (chartHistory.length - 1 - i) * plotW / (HISTORY_SIZE - 1);
+      ctx.lineWidth = 2; ctx.lineJoin = ctx.lineCap = 'round';
+      CHART_KEYS.forEach((key, series) => {
+        ctx.beginPath();
+        chartHistory.forEach((sample, i) => { const px = x(i), py = y(sample[key]); i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); });
+        ctx.strokeStyle = CHART_COLORS[series]; ctx.stroke();
+        const ex = x(chartHistory.length - 1), ey = y(chartHistory[chartHistory.length - 1][key]);
+        ctx.beginPath(); ctx.arc(ex, ey, 5, 0, Math.PI * 2); ctx.fillStyle = '#161b22'; ctx.fill();
+        ctx.beginPath(); ctx.arc(ex, ey, 3, 0, Math.PI * 2); ctx.fillStyle = CHART_COLORS[series]; ctx.fill();
+      });
+      if (hoverIndex >= 0 && hoverIndex < chartHistory.length) {
+        const hx = x(hoverIndex); ctx.strokeStyle = '#8b949e'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(hx, top); ctx.lineTo(hx, top + plotH); ctx.stroke();
+        CHART_KEYS.forEach((key, series) => {
+          const py = y(chartHistory[hoverIndex][key]);
+          ctx.beginPath(); ctx.arc(hx, py, 4, 0, Math.PI * 2); ctx.fillStyle = '#161b22'; ctx.fill();
+          ctx.beginPath(); ctx.arc(hx, py, 2.5, 0, Math.PI * 2); ctx.fillStyle = CHART_COLORS[series]; ctx.fill();
+        });
+      }
+    }
+    function chartHover(event) {
+      if (!chartHistory.length) return;
+      const canvas = $('historyChart'), width = canvas.clientWidth, plotW = width - 36;
+      const px = Math.max(27, Math.min(width - 9, event.clientX - canvas.getBoundingClientRect().left));
+      hoverIndex = Math.max(0, Math.min(chartHistory.length - 1, Math.round(chartHistory.length - 1 - (27 + plotW - px) / (plotW / (HISTORY_SIZE - 1)))));
+      drawChart();
+      const sample = chartHistory[hoverIndex], labels = ['CPU', '内存', '磁盘'], tip = $('chartTip');
+      tip.innerHTML = `<div>${new Date(sample.time).toLocaleTimeString()}</div>` + CHART_KEYS.map((key, index) => `<span><i style=background:${CHART_COLORS[index]}></i>${labels[index]} ${sample[key].toFixed(1)}%</span>`).join('');
+      tip.classList.add('show');
+      const pointX = 27 + plotW - (chartHistory.length - 1 - hoverIndex) * plotW / (HISTORY_SIZE - 1);
+      tip.style.left = `${pointX > width / 2 ? 4 : width - 108}px`;
+    }
     function renderMetrics(data) {
       const has = (value) => value !== null && value !== undefined;
       lastMetrics.cpu = has(data.cpu) ? data.cpu : 0;
@@ -167,14 +214,23 @@
       $('cpuText').textContent = has(data.cpu) ? `${data.cpu.toFixed(1)}%` : '--';
       $('memText').textContent = data.mem ? `${fmtMB(data.mem.used)} / ${fmtMB(data.mem.total)}` : '--';
       $('diskText').textContent = data.disk ? `${data.disk.used} / ${data.disk.total}（${data.disk.percent}%）` : '--';
+      chartHistory.push({ cpu: lastMetrics.cpu, mem: lastMetrics.mem, disk: lastMetrics.disk, time: Date.now() });
+      if (chartHistory.length > HISTORY_SIZE) chartHistory.shift();
+      hoverIndex = -1;
+      $('chartTip').classList.remove('show');
       renderBars();
+      drawChart();
     }
     function resetMetrics() {
       lastMetrics = { cpu: 0, mem: 0, disk: 0 };
+      chartHistory = [];
+      hoverIndex = -1;
+      $('chartTip').classList.remove('show');
       $('cpuText').textContent = $('memText').textContent = $('diskText').textContent = '--';
       $('metricsStatus').textContent = '等待连接';
       $('metricsStatus').classList.remove('err');
       renderBars();
+      drawChart();
     }
     async function refreshMetrics() {
       if (metricsBusy || !sessionId) return;
@@ -211,11 +267,11 @@
       const file = $('fileInput').files[0];
       if (!file) return setFileStatus('请先选择一个本地文件', 'err');
       if (!sessionId) return setFileStatus('请先连接服务器', 'err');
-      const dir = $('uploadDir').value.trim() || '/tmp';
+      const destination = $('uploadPath').value.trim() || `/tmp/${file.name}`;
       const button = $('uploadBtn');
       const xhr = new XMLHttpRequest();
       button.disabled = true;
-      xhr.open('POST', `/upload?sessionId=${encodeURIComponent(sessionId)}&dir=${encodeURIComponent(dir)}&name=${encodeURIComponent(file.name)}`);
+      xhr.open('POST', `/upload?sessionId=${encodeURIComponent(sessionId)}&path=${encodeURIComponent(destination)}&name=${encodeURIComponent(file.name)}`);
       xhr.setRequestHeader('Content-Type', 'application/octet-stream');
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) setFileStatus(`上传中 ${Math.round(event.loaded / event.total * 100)}%`);
@@ -225,7 +281,7 @@
         let data = {};
         try { data = JSON.parse(xhr.responseText); } catch (_) { }
         if (xhr.status >= 200 && xhr.status < 300) {
-          setFileStatus(`上传成功：${data.path || dir}（${fmtBytes(file.size)}）`, 'ok');
+          setFileStatus(`上传成功：${data.path || destination}（${fmtBytes(file.size)}）`, 'ok');
         } else {
           setFileStatus(`上传失败：${data.error || `HTTP ${xhr.status}`}`, 'err');
         }
@@ -277,7 +333,13 @@
 
     term.onData((data) => send({ type: 'input', data }));
     term.onResize(({ cols, rows }) => send({ type: 'resize', cols, rows }));
-    window.addEventListener('resize', () => { fitTerminal(); renderBars(); });
+    window.addEventListener('resize', () => { fitTerminal(); renderBars(); drawChart(); });
+    $('historyChart').addEventListener('pointermove', chartHover);
+    $('historyChart').addEventListener('pointerleave', () => {
+      hoverIndex = -1;
+      $('chartTip').classList.remove('show');
+      drawChart();
+    });
     if (window.ResizeObserver) new ResizeObserver(() => fitTerminal()).observe($('terminal'));
     $('connectForm').addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -297,6 +359,8 @@
         const data = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(data.error || `连接失败（HTTP ${response.status}）`);
         setSession(data.sessionId, `${username}@${host}:${port}`);
+        localStorage.setItem('webssh.host', host);
+        localStorage.setItem('webssh.port', String(port));
         $('password').value = '';
         everOpened = false;
         term.reset();
@@ -323,6 +387,8 @@
     });
     const savedTarget = sessionStorage.getItem('webssh.target');
     if (savedTarget) $('target').textContent = savedTarget;
+    const savedHost = localStorage.getItem('webssh.host');
+    if (savedHost) { $('host').value = savedHost; $('port').value = localStorage.getItem('webssh.port') || '22'; }
     updateButtons(false);
     resetMetrics();
     fitTerminal();
@@ -331,5 +397,5 @@
       $('connectBtn').disabled = true;
       openSocket();
     } else {
-      setTimeout(() => $('host').focus(), 50);
+      setTimeout(() => ($('host').value ? $('password') : $('host')).focus(), 50);
     } </script> </body> </html>
